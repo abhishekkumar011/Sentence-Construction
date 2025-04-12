@@ -1,10 +1,10 @@
-import { HeroSection } from "./components";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <HeroSection/>
-    </>
+    <main>
+      <Outlet />
+    </main>
   );
 }
 
