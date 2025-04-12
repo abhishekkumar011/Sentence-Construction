@@ -5,15 +5,15 @@ import { useEffect, useState } from "react";
 import { IQuestion } from "@/types/QuizData";
 
 const Quiz = () => {
-  const [questionData, setQuestionData] = useState<IQuestion | null>(null);
+  const [questionData, setQuestionData] = useState<IQuestion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         const response = await axios.get("http://localhost:3000/data");
-        const lastQuestion = response.data?.questions[9];
-        setQuestionData(lastQuestion);
+        setQuestionData(response.data?.questions);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching question: ", error);
@@ -25,6 +25,18 @@ const Quiz = () => {
   if (loading || !questionData) {
     return <div className="text-center p-4">Loading...</div>;
   }
+
+  const totalQuestion = questionData.length;
+  const currentQuestion = questionData[currentQuestionIndex];
+
+  const handleNext = () => {
+    if (currentQuestionIndex < totalQuestion - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      //Go to feedback page or show score
+      console.log("Quiz Finished");
+    }
+  };
 
   return (
     <div className="mx-30 px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
@@ -42,20 +54,25 @@ const Quiz = () => {
 
       <div>
         <h2 className="text-2xl text-gray-900 px-15 leading-14">
-          {questionData.question}
+          {currentQuestion.question}
         </h2>
       </div>
 
       <div className="flex justify-center gap-4 flex-wrap">
-        {questionData.options.map((text: string, index: number) => (
+        {currentQuestion.options.map((option, index) => (
           <Button variant={"outline"} key={index} className="cursor-pointer">
-            {text}
+            {option}
           </Button>
         ))}
       </div>
 
       <div className="flex justify-end w-full">
-        <Button variant="outline" size="lg" className="cursor-pointer">
+        <Button
+          variant="outline"
+          size="lg"
+          className="cursor-pointer"
+          onClick={handleNext}
+        >
           <ChevronRight />
         </Button>
       </div>
