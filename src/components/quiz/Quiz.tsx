@@ -8,11 +8,12 @@ const Quiz = () => {
   const [questionData, setQuestionData] = useState<IQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<string[]>(["","","","",]);
 
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/data");
+        const response = await axios.get(import.meta.env.VITE_QUIZ_URL);
         setQuestionData(response.data?.questions);
         setLoading(false);
       } catch (error) {
@@ -21,6 +22,11 @@ const Quiz = () => {
     };
     fetchQuestion();
   }, []);
+
+  useEffect(() => {
+    // Reset selected answers when moving to next question
+    setSelectedAnswers(["", "", "", ""]);
+  }, [currentQuestionIndex]);
 
   if (loading || !questionData) {
     return <div className="text-center p-4">Loading...</div>;
@@ -38,6 +44,43 @@ const Quiz = () => {
     }
   };
 
+  const handleOptionClick = (option: string) => {
+    setSelectedAnswers((prev) => {
+      const newAnswers = [...prev];
+      const existingIndex = newAnswers.indexOf(option);
+
+      if (existingIndex !== -1) {
+        // If option is already selected, remove it from that position
+        newAnswers[existingIndex] = "";
+      } else {
+        // Find the first empty (null) position and place the option there
+        const firstEmptyIndex = newAnswers.indexOf("");
+        if (firstEmptyIndex !== -1) {
+          newAnswers[firstEmptyIndex] = option;
+        }
+      }
+
+      return newAnswers;
+    });
+  };
+
+  const renderQuestionWithBlanks = () => {
+    const parts = currentQuestion.question.split("_____________");
+    return parts.map((part, index) => (
+      <span key={index}>
+        {part}
+        {index < parts.length - 1 && (
+          <span className="mx-2 px-4 py-1 bg-gray-100 rounded">
+            {selectedAnswers[index] || "_____________"}
+          </span>
+        )}
+      </span>
+    ));
+  };
+
+  const isAnswerSelected = (option: string) => selectedAnswers.includes(option);
+  const isAllAnswersSelected = selectedAnswers.every((answer) => answer !== "");
+
   return (
     <div className="mx-30 px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
       {/* UpperPart  */}
@@ -54,13 +97,20 @@ const Quiz = () => {
 
       <div>
         <h2 className="text-2xl text-gray-900 px-15 leading-14">
-          {currentQuestion.question}
+          {renderQuestionWithBlanks()}
         </h2>
       </div>
 
       <div className="flex justify-center gap-4 flex-wrap">
         {currentQuestion.options.map((option, index) => (
-          <Button variant={"outline"} key={index} className="cursor-pointer">
+          <Button
+            variant={isAnswerSelected(option) ? "default" : "outline"}
+            key={index}
+            className={`cursor-pointer ${
+              isAnswerSelected(option) ? "bg-blue-500 text-white" : ""
+            }`}
+            onClick={() => handleOptionClick(option)}
+          >
             {option}
           </Button>
         ))}
@@ -72,6 +122,7 @@ const Quiz = () => {
           size="lg"
           className="cursor-pointer"
           onClick={handleNext}
+          disabled={!isAllAnswersSelected}
         >
           <ChevronRight />
         </Button>
