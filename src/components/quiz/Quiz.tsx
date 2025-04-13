@@ -8,8 +8,15 @@ const Quiz = () => {
   const [questionData, setQuestionData] = useState<IQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<string[]>(["","","","",]);
+  const [selectedAnswers, setSelectedAnswers] = useState<string[]>([
+    "",
+    "",
+    "",
+    "",
+  ]);
+  const [timer, setTimer] = useState(30);
 
+  //This is used to fetch the question from the JSON Server
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
@@ -26,7 +33,22 @@ const Quiz = () => {
   useEffect(() => {
     // Reset selected answers when moving to next question
     setSelectedAnswers(["", "", "", ""]);
+    setTimer(30); //Reset timer when question change
   }, [currentQuestionIndex]);
+
+  useEffect(() => {
+    if (timer === 0) {
+      handleNext();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1); // Decrease timer by 1 every second
+    }, 1000);
+
+    // The cleanup function clearInterval() ensures that only one timer runs at a time and avoids memory leaks.
+    return () => clearInterval(interval);
+  }, [timer]);
 
   if (loading || !questionData) {
     return <div className="text-center p-4">Loading...</div>;
@@ -44,6 +66,7 @@ const Quiz = () => {
     }
   };
 
+  //This function is called whenever the user clicks on an answer option button.
   const handleOptionClick = (option: string) => {
     setSelectedAnswers((prev) => {
       const newAnswers = [...prev];
@@ -53,7 +76,7 @@ const Quiz = () => {
         // If option is already selected, remove it from that position
         newAnswers[existingIndex] = "";
       } else {
-        // Find the first empty (null) position and place the option there
+        // Find the first empty position and place the option there
         const firstEmptyIndex = newAnswers.indexOf("");
         if (firstEmptyIndex !== -1) {
           newAnswers[firstEmptyIndex] = option;
@@ -85,7 +108,7 @@ const Quiz = () => {
     <div className="mx-30 px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
       {/* UpperPart  */}
       <div className="flex justify-between">
-        <h3 className="text-2xl">0:15</h3>
+        <h3 className="text-2xl font-semibold text-red-600">⏱ {timer}s</h3>
         <Button variant={"outline"} className="text-lg cursor-pointer">
           Quit
         </Button>
