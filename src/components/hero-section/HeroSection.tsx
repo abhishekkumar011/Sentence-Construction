@@ -7,10 +7,10 @@ const HeroSection = () => {
   return (
     <div className="">
       {/* Navbar */}
-      <div className="shadow-md h-[64px] flex justify-between items-center px-20">
+      <div className="shadow-md h-[64px] flex justify-center sm:justify-between items-center px-6 sm:px-10 md:px-16 lg:px-20">
         <div className=""></div>
         <h1 className="text-xl font-medium">Sentence Construction</h1>
-        <div>
+        <div className="hidden sm:block">
           <svg
             width="64"
             height="64"
@@ -27,7 +27,7 @@ const HeroSection = () => {
       </div>
 
       {/* Center Part */}
-      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+      <div className="flex md:items-center justify-center h-[calc(100vh-64px)] my-15 md:my-0 mx-5 sm:mx-0">
         <div className="w-lg text-center items-center flex flex-col gap-16">
           <div className="flex flex-col gap-8 items-center">
             <svg
@@ -43,7 +43,7 @@ const HeroSection = () => {
               />
             </svg>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 flex-wrap">
               <h1 className="text-4xl">Sentence Construction</h1>
               <p className="text-gray-700">
                 Select the correct words to complete the sentence by arranging
@@ -52,13 +52,13 @@ const HeroSection = () => {
             </div>
           </div>
 
-          <div className="flex justify-center gap-8 w-full">
-            <div className="border-r-2 border-gray-200 pr-10 flex flex-col gap-4">
+          <div className="flex justify-center gap-8 w-full flex-col sm:flex-row">
+            <div className="sm:border-r-2 border-gray-200 sm:pr-10 flex flex-col gap-4">
               <h4 className="text-lg">Time Per Question</h4>
               <p>30 Sec</p>
             </div>
 
-            <div className="border-r-2 border-gray-200 pr-10 flex flex-col gap-4">
+            <div className="sm:border-r-2 border-gray-200 sm:pr-10 flex flex-col gap-4">
               <h4 className="text-lg">Total Question</h4>
               <p>10</p>
             </div>
@@ -70,7 +70,7 @@ const HeroSection = () => {
           </div>
 
           {/* buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-col sm:flex-row w-full sm:w-fit">
             <Button
               variant={"outline"}
               className="border-2 border-primary text-primary px-10 py-2.5 cursor-pointer"
