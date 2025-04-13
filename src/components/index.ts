@@ -1,4 +1,6 @@
-import HeroSection from "./hero-section/HeroSection";
 import Quiz from "./quiz/Quiz";
+import Result from "./Result/Result";
+import HeroSection from "./hero-section/HeroSection";
+import AnswerCard from "./AnswerCard/AnswerCard";
 
-export { HeroSection, Quiz };
+export { Quiz, Result, HeroSection, AnswerCard };

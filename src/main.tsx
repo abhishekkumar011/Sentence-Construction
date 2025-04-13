@@ -3,8 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Home } from "./pages/index.ts";
-import Quiz from "./pages/Quiz/Quiz.tsx";
+import { Home, Quiz, Result } from "./pages/index.ts";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +18,11 @@ const router = createBrowserRouter([
       {
         path: "/quiz",
         element: <Quiz />,
+      },
+
+      {
+        path: "/result",
+        element: <Result />,
       },
     ],
   },

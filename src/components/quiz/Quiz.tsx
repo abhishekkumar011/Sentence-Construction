@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IQuestion } from "@/types/QuizData";
+import { useNavigate } from "react-router-dom";
 
 const Quiz = () => {
   const [questionData, setQuestionData] = useState<IQuestion[]>([]);
@@ -15,6 +16,8 @@ const Quiz = () => {
     "",
   ]);
   const [timer, setTimer] = useState(30);
+
+  const navigate = useNavigate();
 
   //This is used to fetch the question from the JSON Server
   useEffect(() => {
@@ -109,7 +112,14 @@ const Quiz = () => {
       {/* UpperPart  */}
       <div className="flex justify-between">
         <h3 className="text-2xl font-semibold text-red-600">⏱ {timer}s</h3>
-        <Button variant={"outline"} className="text-lg cursor-pointer">
+        <div className="text-xl textg-gray-700">
+          {`${currentQuestionIndex + 1} of ${totalQuestion}`}
+        </div>
+        <Button
+          variant={"outline"}
+          className="text-lg cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           Quit
         </Button>
       </div>
@@ -143,7 +153,9 @@ const Quiz = () => {
         <Button
           variant="outline"
           size="lg"
-          className="cursor-pointer"
+          className={`cursor-pointer ${
+            isAllAnswersSelected ? "bg-primary text-white" : ""
+          }`}
           onClick={handleNext}
           disabled={!isAllAnswersSelected}
         >

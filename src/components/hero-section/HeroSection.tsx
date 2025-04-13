@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="">
       {/* Navbar */}
@@ -55,7 +58,7 @@ const HeroSection = () => {
               <p>30 Sec</p>
             </div>
 
-            <div className="border-r-2 border-gray-200 pr-10 flex flex-col gap-4"> 
+            <div className="border-r-2 border-gray-200 pr-10 flex flex-col gap-4">
               <h4 className="text-lg">Total Question</h4>
               <p>10</p>
             </div>
@@ -68,8 +71,18 @@ const HeroSection = () => {
 
           {/* buttons */}
           <div className="flex gap-4">
-            <Button variant={"outline"} className="border-2 border-primary text-primary px-10 py-2.5 cursor-pointer">Back</Button>
-            <Button className="border-2 text-white px-10 py-2.5 cursor-pointer">Start</Button>
+            <Button
+              variant={"outline"}
+              className="border-2 border-primary text-primary px-10 py-2.5 cursor-pointer"
+            >
+              Back
+            </Button>
+            <Button
+              className="border-2 text-white px-10 py-2.5 cursor-pointer"
+              onClick={() => navigate("/quiz")}
+            >
+              Start
+            </Button>
           </div>
         </div>
       </div>
