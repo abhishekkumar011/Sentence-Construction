@@ -135,7 +135,7 @@ const Quiz = () => {
   const isAllAnswersSelected = selectedAnswers.every((answer) => answer !== "");
 
   return (
-    <div className="mx-30 px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
+    <div className="px-5 md:mx-30 md:px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
       {/* UpperPart  */}
       <div className="flex justify-between">
         <h3 className="text-2xl font-semibold text-red-600">⏱ {timer}s</h3>
@@ -156,7 +156,7 @@ const Quiz = () => {
       </h3>
 
       <div>
-        <h2 className="text-2xl text-gray-900 px-15 leading-14">
+        <h2 className="px-5 text-2xl text-gray-900 md:px-15 leading-14">
           {renderQuestionWithBlanks()}
         </h2>
       </div>
