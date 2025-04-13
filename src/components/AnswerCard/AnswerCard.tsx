@@ -17,7 +17,7 @@ const AnswerCard = ({
   };
 
   return (
-    <div className="w-2xl border rounded-lg shadow-md overflow-hidden">
+    <div className="mx-5 md:mx-0 md:w-2xl border rounded-lg shadow-sm overflow-hidden mb-10">
       {/* upper Div  */}
       <div className="flex flex-col gap-3 p-4">
         <div className="flex justify-between">

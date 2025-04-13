@@ -33,10 +33,10 @@ const Result = () => {
   return (
     <div>
       {/* Navbar */}
-      <div className="shadow-md h-[64px] flex justify-between items-center px-20">
+      <div className="shadow-md h-[64px] flex justify-center sm:justify-between items-center px-6 sm:px-10 md:px-16 lg:px-20">
         <div className=""></div>
         <h1 className="text-xl font-medium">Sentence Construction</h1>
-        <div>
+        <div className="hidden sm:block">
           <svg
             width="64"
             height="64"
@@ -81,7 +81,7 @@ const Result = () => {
       </div>
 
       {/* AnswerCardPart */}
-      <div className="flex flex-col items-center justify-center gap-28">
+      <div className="flex flex-col items-center justify-center md:gap-28">
         {results.map((result, index) => (
           <AnswerCard
             key={result.questionId}
