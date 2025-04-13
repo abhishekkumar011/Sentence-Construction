@@ -1,7 +1,35 @@
+import { useLocation, useNavigate } from "react-router-dom";
 import AnswerCard from "../AnswerCard/AnswerCard";
 import { Button } from "../ui/button";
+import { useEffect } from "react";
+import { IQuizResult } from "@/types/QuizData";
 
 const Result = () => {
+  //This is used to retrive the data when navigate to result page
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to home if there's no quiz result data
+    if (!location.state) {
+      navigate("/");
+    }
+  }, [location.state, navigate]);
+
+  // Return loading state while checking for data
+  if (!location.state) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  const { results, score } = location.state as {
+    results: IQuizResult[];
+    score: number;
+  };
+
   return (
     <div>
       {/* Navbar */}
@@ -29,19 +57,21 @@ const Result = () => {
         <div className="w-2xl">
           <div className="flex flex-col items-center gap-10">
             <div className="w-40 h-40 rounded-full border-4 border-green-700 flex flex-col justify-center items-center gap-1 text-green-700">
-              <h1 className="text-5xl font-semibold">93</h1>
+              <h1 className="text-5xl font-semibold">{score}</h1>
               <p className="text-md">Overall Score</p>
             </div>
 
             <p className="text-center text-lg text-gray-700">
-              While you correctly formed several sentences, there are a couple
-              of areas where improvement is needed. Pay close attention to
-              sentence structure and word placement to ensure clarity and
-              correctness. Review your responses below for more details.
+              {score >= 90
+                ? "Excellent work! You've demonstrated a strong understanding of sentence construction."
+                : score >= 70
+                ? "Good job! While you've shown good understanding, there's room for improvement."
+                : "Keep practicing! Focus on understanding sentence structure and word placement."}
             </p>
             <Button
               variant={"outline"}
               className="cursor-pointer mt-10 border-2 border-primary text-primary px-15"
+              onClick={() => navigate("/")}
             >
               Go to Dashboard
             </Button>
@@ -52,9 +82,14 @@ const Result = () => {
 
       {/* AnswerCardPart */}
       <div className="flex flex-col items-center justify-center gap-28">
-        <AnswerCard />
-        <AnswerCard />
-        <AnswerCard />
+        {results.map((result, index) => (
+          <AnswerCard
+            key={result.questionId}
+            result={result}
+            questionNumber={index + 1}
+            totalQuestions={results.length}
+          />
+        ))}
       </div>
     </div>
   );

@@ -6,3 +6,17 @@ export interface IQuestion {
   options: string[];
   correctAnswer: string[];
 }
+
+export interface IQuizResult {
+  questionId: string;
+  question: string;
+  userAnswer: string[];
+  correctAnswer: string[];
+  isCorrect: boolean;
+}
+
+export interface IAnswerCardProps {
+  result: IQuizResult;
+  questionNumber: number;
+  totalQuestions: number;
+}

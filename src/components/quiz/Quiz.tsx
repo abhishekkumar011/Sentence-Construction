@@ -2,7 +2,7 @@ import axios from "axios";
 import { Button } from "../ui/button";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { IQuestion } from "@/types/QuizData";
+import { IQuestion, IQuizResult } from "@/types/QuizData";
 import { useNavigate } from "react-router-dom";
 
 const Quiz = () => {
@@ -16,6 +16,7 @@ const Quiz = () => {
     "",
   ]);
   const [timer, setTimer] = useState(30);
+  const [quizResults, setQuizResults] = useState<IQuizResult[]>([]);
 
   const navigate = useNavigate();
 
@@ -61,11 +62,37 @@ const Quiz = () => {
   const currentQuestion = questionData[currentQuestionIndex];
 
   const handleNext = () => {
+    //Save current question result
+    const result: IQuizResult = {
+      questionId: currentQuestion.questionId,
+      question: currentQuestion.question,
+      userAnswer: selectedAnswers,
+      correctAnswer: currentQuestion.correctAnswer,
+      isCorrect:
+        JSON.stringify(selectedAnswers) ===
+        JSON.stringify(currentQuestion.correctAnswer),
+    };
+
+    setQuizResults((prev) => [...prev, result]);
+
     if (currentQuestionIndex < totalQuestion - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      //Go to feedback page or show score
-      console.log("Quiz Finished");
+      //Go to result page or show score
+      //Add last result for calculate the final score because React state updates (like setQuizResults) are asynchronous
+      //This means the next line of code (inside handleNext) won’t see the updated value yet. that's why we store the last result
+      const finalResults = [...quizResults, result];
+
+      //How many answers are correct which is given by user
+      const correctAnswers = finalResults.filter((res) => res.isCorrect).length;
+      const score = Math.round((correctAnswers / totalQuestion) * 100);
+
+      navigate("/result", { 
+        state: { 
+          results: finalResults,
+          score
+        }
+      });
     }
   };
 
@@ -113,7 +140,7 @@ const Quiz = () => {
       <div className="flex justify-between">
         <h3 className="text-2xl font-semibold text-red-600">⏱ {timer}s</h3>
         <div className="text-xl textg-gray-700">
-          {`${currentQuestionIndex + 1} of ${totalQuestion}`}
+          {currentQuestionIndex + 1} of {totalQuestion}
         </div>
         <Button
           variant={"outline"}
