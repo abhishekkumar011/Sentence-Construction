@@ -1,12 +1,18 @@
-import { IAnswerCardProps } from "@/types/QuizData";
 import { Badge } from "../ui/badge";
+import { IQuizResult } from "@/types/QuizData";
+
+interface IAnswerCardProps {
+  result: IQuizResult;
+  questionNumber: number;
+  totalQuestions: number;
+}
 
 const AnswerCard = ({
   result,
   questionNumber,
   totalQuestions,
 }: IAnswerCardProps) => {
-  const renderSentenceWithAnswers = (sentence: string, answers: string[]) => {
+  const completedQuestion = (sentence: string, answers: string[]) => {
     const parts = sentence.split("_____________");
     return parts.map((part, index) => (
       <span key={index}>
@@ -18,7 +24,6 @@ const AnswerCard = ({
 
   return (
     <div className="mx-5 md:mx-0 md:w-2xl border rounded-lg shadow-sm overflow-hidden mb-10">
-      {/* upper Div  */}
       <div className="flex flex-col gap-3 p-4">
         <div className="flex justify-between">
           <Badge className="bg-[#F0F0F0] text-gray-600 text-sm">Prompt</Badge>
@@ -28,11 +33,10 @@ const AnswerCard = ({
         </div>
 
         <p className="text-gray-700">
-          {renderSentenceWithAnswers(result.question, result.correctAnswer)}
+          {completedQuestion(result.question, result.correctAnswer)}
         </p>
       </div>
 
-      {/* Lower Div  */}
       <div className="bg-[#F6F9F9] flex flex-col gap-3 p-4">
         <div className="flex gap-5">
           <p className="text-gray-600">Your Response</p>
@@ -48,7 +52,7 @@ const AnswerCard = ({
         </div>
 
         <p className="text-gray-700">
-          {renderSentenceWithAnswers(result.question, result.userAnswer)}
+          {completedQuestion(result.question, result.userAnswer)}
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import Quiz from "./quiz/Quiz";
-import Result from "./Result/Result";
+import Result from "./result/Result";
+import AnswerCard from "./answer-card/AnswerCard";
 import HeroSection from "./hero-section/HeroSection";
-import AnswerCard from "./AnswerCard/AnswerCard";
 
 export { Quiz, Result, HeroSection, AnswerCard };

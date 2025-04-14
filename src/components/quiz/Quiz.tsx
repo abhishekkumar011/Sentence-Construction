@@ -2,13 +2,22 @@ import axios from "axios";
 import { Button } from "../ui/button";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { IQuestion, IQuizResult } from "@/types/QuizData";
+import { IQuizResult } from "@/types/QuizData";
 import { useNavigate } from "react-router-dom";
 
+interface IQuestion {
+  questionId: string;
+  question: string;
+  questionType: string;
+  answerType: string;
+  options: string[];
+  correctAnswer: string[];
+}
+
 const Quiz = () => {
-  const [questionData, setQuestionData] = useState<IQuestion[]>([]);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([
     "",
     "",
@@ -20,12 +29,12 @@ const Quiz = () => {
 
   const navigate = useNavigate();
 
-  //This is used to fetch the question from the JSON Server
+  //function to fetch questions
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         const response = await axios.get(import.meta.env.VITE_QUIZ_URL);
-        setQuestionData(response.data?.questions);
+        setQuestions(response.data?.questions);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching question: ", error);
@@ -34,11 +43,11 @@ const Quiz = () => {
     fetchQuestion();
   }, []);
 
+  //Reset Function
   useEffect(() => {
-    // Reset selected answers when moving to next question
     setSelectedAnswers(["", "", "", ""]);
-    setTimer(30); //Reset timer when question change
-  }, [currentQuestionIndex]);
+    setTimer(30);
+  }, [currentIndex]);
 
   useEffect(() => {
     if (timer === 0) {
@@ -46,70 +55,66 @@ const Quiz = () => {
       return;
     }
 
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1); // Decrease timer by 1 every second
+    const countdown = setInterval(() => {
+      setTimer((prev) => prev - 1);
     }, 1000);
 
-    // The cleanup function clearInterval() ensures that only one timer runs at a time and avoids memory leaks.
-    return () => clearInterval(interval);
+    //Clear countdown
+    return () => clearInterval(countdown);
   }, [timer]);
 
-  if (loading || !questionData) {
+  if (loading || questions.length === 0) {
     return <div className="text-center p-4">Loading...</div>;
   }
 
-  const totalQuestion = questionData.length;
-  const currentQuestion = questionData[currentQuestionIndex];
+  const totalQuestion = questions.length;
+  const currentQues = questions[currentIndex];
 
   const handleNext = () => {
-    //Save current question result
+    //current question ka result
     const result: IQuizResult = {
-      questionId: currentQuestion.questionId,
-      question: currentQuestion.question,
+      questionId: currentQues.questionId,
+      question: currentQues.question,
       userAnswer: selectedAnswers,
-      correctAnswer: currentQuestion.correctAnswer,
+      correctAnswer: currentQues.correctAnswer,
       isCorrect:
         JSON.stringify(selectedAnswers) ===
-        JSON.stringify(currentQuestion.correctAnswer),
+        JSON.stringify(currentQues.correctAnswer),
     };
 
-    setQuizResults((prev) => [...prev, result]);
+    const updatedResults = [...quizResults, result];
 
-    if (currentQuestionIndex < totalQuestion - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+    if (currentIndex < totalQuestion - 1) {
+      setQuizResults(updatedResults);
+      setCurrentIndex((prev) => prev + 1);
     } else {
-      //Go to result page or show score
-      //Add last result for calculate the final score because React state updates (like setQuizResults) are asynchronous
-      //This means the next line of code (inside handleNext) won’t see the updated value yet. that's why we store the last result
-      const finalResults = [...quizResults, result];
-
-      //How many answers are correct which is given by user
-      const correctAnswers = finalResults.filter((res) => res.isCorrect).length;
+      //Kitna answer correct hai
+      const correctAnswers = updatedResults.filter(
+        (res) => res.isCorrect
+      ).length;
       const score = Math.round((correctAnswers / totalQuestion) * 100);
 
-      navigate("/result", { 
-        state: { 
-          results: finalResults,
-          score
-        }
+      navigate("/result", {
+        state: {
+          results: updatedResults,
+          score,
+        },
       });
     }
   };
 
-  //This function is called whenever the user clicks on an answer option button.
-  const handleOptionClick = (option: string) => {
+  //Ye function option ko select kr ke question mai fill kr rha hai
+  const handleSelect = (option: string) => {
     setSelectedAnswers((prev) => {
       const newAnswers = [...prev];
-      const existingIndex = newAnswers.indexOf(option);
+      const alreadyChosen = newAnswers.indexOf(option);
 
-      if (existingIndex !== -1) {
-        // If option is already selected, remove it from that position
-        newAnswers[existingIndex] = "";
+      if (alreadyChosen !== -1) {
+        newAnswers[alreadyChosen] = "";
       } else {
-        // Find the first empty position and place the option there
-        const firstEmptyIndex = newAnswers.indexOf("");
-        if (firstEmptyIndex !== -1) {
-          newAnswers[firstEmptyIndex] = option;
+        const emptyBlank = newAnswers.indexOf("");
+        if (emptyBlank !== -1) {
+          newAnswers[emptyBlank] = option;
         }
       }
 
@@ -117,8 +122,8 @@ const Quiz = () => {
     });
   };
 
-  const renderQuestionWithBlanks = () => {
-    const parts = currentQuestion.question.split("_____________");
+  const displayQuestion = () => {
+    const parts = currentQues.question.split("_____________");
     return parts.map((part, index) => (
       <span key={index}>
         {part}
@@ -132,15 +137,14 @@ const Quiz = () => {
   };
 
   const isAnswerSelected = (option: string) => selectedAnswers.includes(option);
-  const isAllAnswersSelected = selectedAnswers.every((answer) => answer !== "");
+  const allSelected = !selectedAnswers.includes("");
 
   return (
     <div className="px-5 md:mx-30 md:px-15 py-5 bg-white border border-gray-300 rounded-lg flex flex-col gap-14">
-      {/* UpperPart  */}
       <div className="flex justify-between">
         <h3 className="text-2xl font-semibold text-red-600">⏱ {timer}s</h3>
         <div className="text-xl textg-gray-700">
-          {currentQuestionIndex + 1} of {totalQuestion}
+          {currentIndex + 1} of {totalQuestion}
         </div>
         <Button
           variant={"outline"}
@@ -157,19 +161,19 @@ const Quiz = () => {
 
       <div>
         <h2 className="px-5 text-2xl text-gray-900 md:px-15 leading-14">
-          {renderQuestionWithBlanks()}
+          {displayQuestion()}
         </h2>
       </div>
 
       <div className="flex justify-center gap-4 flex-wrap">
-        {currentQuestion.options.map((option, index) => (
+        {currentQues.options.map((option, index) => (
           <Button
             variant={isAnswerSelected(option) ? "default" : "outline"}
             key={index}
             className={`cursor-pointer ${
-              isAnswerSelected(option) ? "bg-blue-500 text-white" : ""
+              isAnswerSelected(option) ? "bg-primary text-white" : ""
             }`}
-            onClick={() => handleOptionClick(option)}
+            onClick={() => handleSelect(option)}
           >
             {option}
           </Button>
@@ -181,10 +185,10 @@ const Quiz = () => {
           variant="outline"
           size="lg"
           className={`cursor-pointer ${
-            isAllAnswersSelected ? "bg-primary text-white" : ""
+            allSelected ? "bg-primary text-white" : ""
           }`}
           onClick={handleNext}
-          disabled={!isAllAnswersSelected}
+          disabled={!allSelected}
         >
           <ChevronRight />
         </Button>

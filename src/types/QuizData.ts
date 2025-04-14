@@ -14,9 +14,3 @@ export interface IQuizResult {
   correctAnswer: string[];
   isCorrect: boolean;
 }
-
-export interface IAnswerCardProps {
-  result: IQuizResult;
-  questionNumber: number;
-  totalQuestions: number;
-}

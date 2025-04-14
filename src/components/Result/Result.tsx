@@ -1,29 +1,19 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import AnswerCard from "../AnswerCard/AnswerCard";
-import { Button } from "../ui/button";
 import { useEffect } from "react";
+import { Button } from "../ui/button";
+import { AnswerCard } from "@/components";
 import { IQuizResult } from "@/types/QuizData";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Result = () => {
-  //This is used to retrive the data when navigate to result page
+  //location is used to retrive data
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to home if there's no quiz result data
     if (!location.state) {
       navigate("/");
     }
   }, [location.state, navigate]);
-
-  // Return loading state while checking for data
-  if (!location.state) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
-  }
 
   const { results, score } = location.state as {
     results: IQuizResult[];
@@ -32,7 +22,6 @@ const Result = () => {
 
   return (
     <div>
-      {/* Navbar */}
       <div className="shadow-md h-[64px] flex justify-center sm:justify-between items-center px-6 sm:px-10 md:px-16 lg:px-20">
         <div className=""></div>
         <h1 className="text-xl font-medium">Sentence Construction</h1>
@@ -52,7 +41,6 @@ const Result = () => {
         </div>
       </div>
 
-      {/* Upper Part  */}
       <div className="flex items-center justify-center my-20">
         <div className="w-2xl">
           <div className="flex flex-col items-center gap-10">
@@ -80,7 +68,6 @@ const Result = () => {
         </div>
       </div>
 
-      {/* AnswerCardPart */}
       <div className="flex flex-col items-center justify-center md:gap-28">
         {results.map((result, index) => (
           <AnswerCard
