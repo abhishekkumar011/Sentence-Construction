@@ -4,6 +4,17 @@ import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IQuizResult } from "@/types/QuizData";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 interface IQuestion {
   questionId: string;
@@ -71,7 +82,7 @@ const Quiz = () => {
   const currentQues = questions[currentIndex];
 
   const handleNext = () => {
-    //current question ka result
+    //current question result
     const result: IQuizResult = {
       questionId: currentQues.questionId,
       question: currentQues.question,
@@ -88,7 +99,7 @@ const Quiz = () => {
       setQuizResults(updatedResults);
       setCurrentIndex((prev) => prev + 1);
     } else {
-      //Kitna answer correct hai
+      //Correct Answers
       const correctAnswers = updatedResults.filter(
         (res) => res.isCorrect
       ).length;
@@ -103,7 +114,7 @@ const Quiz = () => {
     }
   };
 
-  //Ye function option ko select kr ke question mai fill kr rha hai
+  //This function is used to select the option and fill in the question
   const handleSelect = (option: string) => {
     setSelectedAnswers((prev) => {
       const newAnswers = [...prev];
@@ -122,6 +133,7 @@ const Quiz = () => {
     });
   };
 
+  //this is used to display the question
   const displayQuestion = () => {
     const parts = currentQues.question.split("_____________");
     return parts.map((part, index) => (
@@ -146,13 +158,36 @@ const Quiz = () => {
         <div className="text-xl textg-gray-700">
           {currentIndex + 1} of {totalQuestion}
         </div>
-        <Button
-          variant={"outline"}
-          className="text-lg cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          Quit
-        </Button>
+
+        <div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="text-lg cursor-pointer">
+                Quit
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-xl">
+                  Are you absolutely sure?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-md">
+                  Are you sure you want to quit? None of your answers will be
+                  saved
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="mx-auto">
+                <AlertDialogCancel className="px-10">Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="px-10 bg-red-600 hover:bg-red-400"
+                  onClick={() => navigate("/")}
+                >
+                  Quit
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
 
       <h3 className="text-xl text-gray-700 text-center">
